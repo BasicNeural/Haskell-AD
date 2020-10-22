@@ -1,55 +1,53 @@
-module Numeric.AD.Computation 
-    (
-      E
-    , V
-    , Coord
-    , eval
-    ) where
+module Numeric.AD.Computation where
 
-import Data.Map as M
+import qualified Data.Map as M
 
 type Coord = String
 type V a = M.Map Coord a
 
 data E a = Var     Coord
-         | T       (E a) a
-         | Vector  [E a]
-         | Matrix  [[E a]]
-         | Const   a
-         | Negate  (E a)
-         | Add     (E a) (E a)
-         | Sub     (E a) (E a)
-         | Multipl (E a) (E a)
-         | Abs     (E a)
-         | Signum  (E a)
-         | Divide  (E a) (E a)
-         | Exp     (E a)
-         | Sqrt    (E a)
-         | Log     (E a)
-         | Sin     (E a)
-         | Cos     (E a)
-         | Tan     (E a)
-         | Asin    (E a)
-         | Acos    (E a)
-         | Atan    (E a)
-         | Sinh    (E a)
-         | Cosh    (E a)
-         | Tanh    (E a)
-         | Asinh   (E a)
-         | Acosh   (E a)
-         | Atanh   (E a)
-         | Pow     (E a) (E a)
-         | LogBase (E a) (E a)
-         | Sum     (E a)
-         deriving Show
+          | T       (E a) a
+          | Vector  [E a]
+          | Matrix  [[E a]]
+          | Const   a
+          | Negate  (E a)
+          | Add     (E a) (E a)
+          | Sub     (E a) (E a)
+          | Multipl (E a) (E a)
+          | Abs     (E a)
+          | Signum  (E a)
+          | Divide  (E a) (E a)
+          | Exp     (E a)
+          | Sqrt    (E a)
+          | Log     (E a)
+          | Sin     (E a)
+          | Cos     (E a)
+          | Tan     (E a)
+          | Asin    (E a)
+          | Acos    (E a)
+          | Atan    (E a)
+          | Sinh    (E a)
+          | Cosh    (E a)
+          | Tanh    (E a)
+          | Asinh   (E a)
+          | Acosh   (E a)
+          | Atanh   (E a)
+          | Pow     (E a) (E a)
+          | LogBase (E a) (E a)
+          | Sum     (E a)
+          | AddV    (E a) (E a)
+          | SubV    (E a) (E a)
+          | ScaleV  (E a) (E a)
+          | DotV    (E a) (E a)
+          deriving Show
 
 instance (Floating a) => Num (E a) where
   (+)           = Add
   (-)           = Sub
   (*)           = Multipl
   negate x      = case x of 
-      Const x -> Const (-x)
-      x       -> Negate x
+    Const x -> Const (-x)
+    x       -> Negate x
   abs           = Abs
   signum x      = case x of
     Const x -> Const (signum x)
@@ -112,3 +110,6 @@ eval e v = case e of
     (Pow x y)        -> eval x v ** eval y v
     (LogBase x y)    -> logBase (eval x v) (eval y v)
     (Sum (Vector a)) -> sum $ map (`eval` v) a
+
+fromList :: Num a => [(E a, a)] -> V a
+fromList v = M.fromList $ map (\(Var x, v) -> (x, v)) v
