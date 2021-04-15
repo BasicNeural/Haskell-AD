@@ -1,6 +1,6 @@
 # Haskell-AD
 
-Automatic differentiation haskell 구현체
+Automatic differentiation haskell 구현
 
 ## example
 
