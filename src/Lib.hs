@@ -7,7 +7,7 @@ import Numeric.AD.Computation as C ( E(Var), fromList, cross, eval, toLaTex )
 import Numeric.AD.Reverse
 import Data.List as L
 import Data.Map as M
-import System.Random
+import System.Random ( getStdGen, Random(randoms) )
 
 varMatrix :: [Char] -> Int -> Int -> [[E a]]
 varMatrix x m n = fmap (\i -> fmap (\j -> Var $ x ++ "_{" ++ (show i ++ show j) ++ "}") [1..n]) [1..m]
@@ -26,7 +26,7 @@ gd v c n = gd v' c (n - 1)
         v' = M.unionWith (\x y -> x - 0.1 * y) v g
 
 someFunc :: IO ()
-someFunc = do
+someFunc = do  
     let w1 = varMatrix "w^1" 2 2
     let b1 = [Var "b^1_1", Var "b1_2"]
     let w2 = varMatrix "w^2" 1 2
@@ -41,10 +41,6 @@ someFunc = do
 
     let v' = gd v c 10000
 
-    putStrLn $ toLaTex $ sigmoid (Var "x")
-
-    putStrLn $ toLaTex $ h [Var "x_1", Var "x_2"]
-
-    mapM_ (\x -> print $ eval (h x) v) input
-    putChar '\n'
-    mapM_ (\x -> print $ eval (h x) v') input
+    mapM_ putStrLn . fmap (\x -> show x ++ ": " ++ show (round $ eval (h x) v)) $ input
+    putStrLn "Trained: "
+    mapM_ putStrLn . fmap (\x -> show x ++ ": " ++ show (round $ eval (h x) v')) $ input
